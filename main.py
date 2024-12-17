@@ -74,10 +74,10 @@ def gravity(grid, x, y):
     return x, y
 
 # MATERIALS
-
 Air = s.Object(s.TEST_SPRITE_PATH)
 Dirt = s.Object(path("Dirt.png"), True, 1, False, True, TABLE=path("Dirt.json", table=True))
 Stone = s.Object(path("Stone.png"), True, 2, False, True, TABLE=path("Stone.json", table=True))
+Hard_stone = s.Object(path("Hard_stone.png"), True, 3, False, True, TABLE=path("Hard_stone.json", table=True))
 l(s.INFO, "Materials initialized")
 
 # ITEMS
@@ -150,7 +150,7 @@ class Player:
 
 g = ge()
 g.start(air=Air)
-g.mass([Dirt, Stone])
+g.mass([ Dirt, Hard_stone, Stone])
 GAME_GRID, CRACK_GRID = g.get()
 l(s.INFO, "Game grid generated")
 

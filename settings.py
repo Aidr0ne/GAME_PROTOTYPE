@@ -39,11 +39,13 @@ START_X = 10
 START_Y = 3
 
 COLOUR_1 = (200, 200, 200)
-COLOUR_2 = (0, 0, 0)
-COLOUR_3 = (0, 0, 255)
+COLOUR_2 = (66, 135, 245)
+COLOUR_3 = (20, 107, 247)
 COLOUR_4 = (173, 126, 230)
 
 FONT = None
+
+INVENTORY_RANGE  = 8
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 

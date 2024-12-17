@@ -1,12 +1,13 @@
 import pygame
 import gui
+from settings import log as l
 import settings as s
 
 c1 = s.COLOUR_1
 c2 = s.COLOUR_2
 c3 = s.COLOUR_3
 c4 = s.COLOUR_4
-
+"""
 class input_box:
     def __init__(self, x, y, w, h, value, bc, type="str"):
         self.rect = pygame.Rect(x, y, w, h)
@@ -27,7 +28,7 @@ class input_box:
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_BACKSPACE:
-                    elf.value = str(self.value)[:-1] 
+                    self.value = str(self.value)[:-1] 
                 elif event.key == pygame.K_RETURN:
                     if self.type == "int":
                         try:
@@ -52,8 +53,25 @@ class input_box:
         # Draw the text
         screen.blit(self.text_surface, (self.rect.x + 5, self.rect.y + 5))
 
+"""        
+# Ok so input box might be a bit broken
+# i was going to use it to change settings in game
+# but they are constants
+# so mabye we should leave them alone
 
+# ... perhaps?
         
+class text:
+    def __init__(self, text, x, y, width, height, colour):
+        self.text = text
+        self.rect = pygame.Rect(x, y, width, height)
+        self.colour = colour
+        self.surface = s.FONT.render(text, True, c1)
+
+    def render(self, screen):
+        pygame.draw.rect(screen, self.colour, self.rect)
+        text_rect = self.surface.get_rect(center=self.rect.center)
+        # TODO: Finish Up the text renderer and the work on inventory gui We need this in order to move foward
 
 
 class button:
@@ -108,9 +126,24 @@ class gui:
     def settings(self, input_box):
         pass
 
-    def create_boxes(self, value, x, y, ib):
+    def inventory(self, screen, button, text, item_list):
+        waiting = True
+        point = 0
+        active = []
+        for i in range(s.INVENTORY_RANGE):
+            try:
+                active.append(item_list[point + 0])
+            except Exception as e:
+                l(s.ERROR, f"Exception loading active inventory range: {e}")
+
+        buttons = [
+            text(active[0], 100, 50, 150, 50)
+        ]
+
+"""    def create_boxes(self, value, x, y, ib):
         input_boxes = []
         if isinstance(value, int):
             input_boxes.append(ib(x, y, 150, 50, value, c4, type="int"))
         if isinstance(value, str):
             input_boxes.append(ib(x, y, 150, 50, value, c4, type="str"))
+"""

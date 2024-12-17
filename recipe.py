@@ -1,4 +1,4 @@
-def r1(stone, big):
+def r0(stone, big):
     # Test recipe
     # 9x stone for a "big stone"
     if stone.amount >= 9:
