@@ -6,7 +6,7 @@ import pygame
 # LOGGING CONFIG
 
 logging.basicConfig(
-     format="{asctime} - {levelname} - {message}",
+     format="{asctime} -- {levelname} -- {message}",
      style="{",
      datefmt="%Y-%m-%d %H:%M",
      filename="app.log",
@@ -45,7 +45,7 @@ COLOUR_4 = (173, 126, 230)
 
 FONT = None
 
-INVENTORY_RANGE  = 8
+INVENTORY_RANGE  = 10
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -141,9 +141,14 @@ class item:
                  sell_price,
                  buy_price,
                  sellable,
-                 recipe_no,
+                 craftable,
+                 recipe_loc,
                  stack,
                  amount,
+                 INGREDIANT_1 = None,
+                 INGREDIANT_2 = None,
+                 INGREDIANT_3 = None,
+                 INGREDIANT_4 = None,
                  ):
         self.obtainable = obtainable
         self.name = name
@@ -151,9 +156,22 @@ class item:
         self.sell_price = sell_price
         self.buy_price = buy_price
         self.sellable = sellable
-        self.recipe_no = recipe_no
+        self.recipe_loc = recipe_loc
         self.stack = stack
+        self.craftable = craftable
         self.amount = amount
+        self.a1 = INGREDIANT_1
+        self.a2 = INGREDIANT_2
+        self.a3 = INGREDIANT_3
+        self.a4 = INGREDIANT_4
 
     def __str__(self):
         return self.name
+    
+    def __int__(self):
+        return self.amount
+
+    def can_craft(self):
+        did, self.a1, self.a2, self.a3, self.a4 = self.recipe_loc(self.a1, self.a2, self.a3, self.a4)
+        return did
+

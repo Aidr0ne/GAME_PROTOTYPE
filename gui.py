@@ -1,5 +1,4 @@
 import pygame
-import gui
 from settings import log as l
 import settings as s
 
@@ -7,6 +6,7 @@ c1 = s.COLOUR_1
 c2 = s.COLOUR_2
 c3 = s.COLOUR_3
 c4 = s.COLOUR_4
+
 """
 class input_box:
     def __init__(self, x, y, w, h, value, bc, type="str"):
@@ -60,18 +60,21 @@ class input_box:
 # so mabye we should leave them alone
 
 # ... perhaps?
-        
+       
 class text:
-    def __init__(self, text, x, y, width, height, colour):
+    def __init__(self, text, x, y, width, height, colour=(66, 135, 245)):
         self.text = text
         self.rect = pygame.Rect(x, y, width, height)
         self.colour = colour
-        self.surface = s.FONT.render(text, True, c1)
+        if text == "Empty":
+            self.surface = s.FONT.render(text, True, c1)
+        else:
+            self.surface = s.FONT.render(text.name, True, c1)
 
     def render(self, screen):
         pygame.draw.rect(screen, self.colour, self.rect)
         text_rect = self.surface.get_rect(center=self.rect.center)
-        # TODO: Finish Up the text renderer and the work on inventory gui We need this in order to move foward
+        screen.blit(self.surface, text_rect)
 
 
 class button:
@@ -100,7 +103,8 @@ class gui:
         buttons = [
             button("Play", 100, 50, 150, 50, (66, 135, 245), (20, 107, 247)),
             button("Settings", 100, 110, 150, 50, (66, 135, 245), (20, 107, 247)),
-            button("Quit", 100, 170, 150, 50, (66, 135, 245), (20, 107, 247))
+            button("Inventory", 100, 170, 150, 50, (66, 135, 245), (20, 107, 247)),
+            button("Quit", 100, 230, 150, 50, (66, 135, 245), (20, 107, 247)),
         ]
         while waiting:
             for event in pygame.event.get():
@@ -115,6 +119,8 @@ class gui:
                             raise NotImplementedError
                         elif button.text == "Quit":
                             return "quit"
+                        elif button.text == "Inventory":
+                            return "Inventory"
                         
             screen.fill((0, 0, 0))
             for button in buttons:
@@ -130,15 +136,59 @@ class gui:
         waiting = True
         point = 0
         active = []
-        for i in range(s.INVENTORY_RANGE):
-            try:
-                active.append(item_list[point + 0])
-            except Exception as e:
-                l(s.ERROR, f"Exception loading active inventory range: {e}")
-
         buttons = [
-            text(active[0], 100, 50, 150, 50)
+            button("Up", 600, 540, 150, 50, c2, c3),
+            button("Down", 600, 600, 150, 50, c2, c3),
+            button("Exit", 600, 50, 150, 50, c2, c3)
         ]
+
+        while waiting:
+            screen.fill((0, 0, 0))
+            active = []
+            for i in range(s.INVENTORY_RANGE):  # Loads 10 items into active
+                try:
+                    active.append(item_list[point + i])
+                except IndexError:
+                    active.append("Empty")
+
+            texts = [
+                text(active[0], 100, 50, 200, 50),
+                text(active[1], 100, 110, 200, 50),
+                text(active[2], 100, 170, 200, 50),
+                text(active[3], 100, 230, 200, 50),
+                text(active[4], 100, 290, 200, 50),
+                text(active[5], 100, 350, 200, 50),
+                text(active[6], 100, 410, 200, 50),
+                text(active[7], 100, 470, 200, 50),
+                text(active[8], 100, 530, 200, 50),
+                text(active[9], 100, 590, 200, 50),
+            ]
+
+            for txt in texts:
+                txt.render(screen)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    waiting = False
+                for btn in buttons:
+                    if btn.clicked(event):
+                        if btn.text == "Up":
+                            if point > 0:
+                                point -= 1
+                            s.log(s.INFO, f"Inventory moved up a point is now {point}")
+                        elif btn.text == "Down":
+                            if point < len(item_list) - s.INVENTORY_RANGE:
+                                s.log(s.INFO, f"Inventory moved down a point is now {point}")
+                                point += 1
+                        elif btn.text == "Exit":
+                            waiting = False
+
+            for btn in buttons:
+                btn.render(screen)
+            pygame.display.flip()
+
+    def crafting_gui(self, ls):
+        pass
 
 """    def create_boxes(self, value, x, y, ib):
         input_boxes = []

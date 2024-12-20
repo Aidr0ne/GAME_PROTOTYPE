@@ -4,8 +4,9 @@ import os
 from settings import log as l
 from gen import Generate as ge
 import saver as sa
-from gui import gui as Gui
+import gui
 from gui import button as btn
+from gui import text as txt
 import recipe as r
 
 # pygame setup
@@ -28,23 +29,31 @@ def path(name, table=False):
     return resolved_path
 
 def render(grid):
+    # Calculate the center of the screen in grid coordinates
     c_x = s.GRID_WIDTH // 2
     c_y = s.GRID_HEIGHT // 2
 
+    # Calculate the top-left corner of the visible grid based on the player's position
     tl_x = player.x - c_x
     tl_y = player.y - c_y
 
+    # Iterate over each tile in the visible grid area
     for y in range(s.GRID_WIDTH):
         for x in range(s.GRID_HEIGHT):
+            # Calculate the actual grid coordinates for the current tile
             gx = tl_x + x
             gy = tl_y + y
 
+            # Check if the current tile is within the bounds of the grid
             if 0 <= gx < len(grid) and 0 <= gy < len(grid[0]):
+                # Get the sprite for the current tile and draw it on the screen
                 image = grid[gx][gy].sprite()
                 screen.blit(image, (128 * x, 72 * y))
             else:
+                # If the tile is out of bounds, fill the area with black
                 screen.fill((0, 0, 0), (128 * x, 72 * y, 128, 72))
 
+    # Draw the player's sprite at the center of the screen
     screen.blit(player.sprite(), (128 * c_x, 72 * c_y))
 
 def walls(grid, x, y, crack_grid, level):
@@ -67,7 +76,7 @@ def walls(grid, x, y, crack_grid, level):
                 l(s.DEBUG, f"Wall at ({x}, {y}) cracked further")
         return False, grid, crack_grid
 
-def gravity(grid, x, y):
+def gravity(grid, x, y): # TODO: IMPLEMENT THIS IN PLAYER MOVEMENT
     if not grid[x][y + 1].SOLID:
         l(s.DEBUG, f"Applying gravity at ({x}, {y})")
         return gravity(grid, x, y + 1)
@@ -81,11 +90,10 @@ Hard_stone = s.Object(path("Hard_stone.png"), True, 3, False, True, TABLE=path("
 l(s.INFO, "Materials initialized")
 
 # ITEMS
-"""
-stone_dust = s.item("Stone Dust", "A Small Amount of Stone Tastes Like Stone", True, 1, 3, True, 1, 10000, 0)
-stone_chunk = s.item("Stone Chunk", "A Piece Of bigger Stone", True, 5, 7, True, 2, 10000, 0)
-stone_cube = s.item("Stone Cube", "A Solid Cube of Stone", True, 25, 30, True, 3, 10000, 0)
-"""
+
+stone_dust = s.item("Stone Dust", "A Small Amount of Stone Tastes Like Stone", True, 1, 3, True, False, None, 10000, 0)
+stone_chunk = s.item("Stone Chunk", "A Piece Of bigger Stone", True, 5, 7, True, True, r.r1, 10000, 0, stone_dust)
+stone_cube = s.item("Stone Cube", "A Solid Cube of Stone", True, 25, 30, True, True, r.r2, 10000, 0, stone_chunk)
 
 GAME_GRID = [[Air for _ in range(s.GRID_HEIGHT)] for _ in range(s.GRID_WIDTH)]
 l(s.INFO, "Game grid initialized")
@@ -157,7 +165,7 @@ l(s.INFO, "Game grid generated")
 player = Player(START_X, START_Y)
 GAME_GRID[START_X][START_Y] = Air
 state = "game"
-gui = Gui()
+gui = gui.gui()
 l(s.INFO, "Game initialized")
 
 if __name__ == "__main__":
@@ -178,6 +186,9 @@ if __name__ == "__main__":
             elif option == "game":
                 state = "game"
                 l(s.INFO, "Player resumed the game from menu")
+            elif option == "Inventory":
+                gui.inventory(screen, btn, txt, [stone_dust, stone_chunk, stone_cube])
+                
 
         pygame.display.flip()
         clock.tick(60)
