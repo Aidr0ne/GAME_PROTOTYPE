@@ -8,6 +8,7 @@ import gui
 from gui import button as btn
 from gui import text as txt
 import recipe as r
+from inventory import get, set
 
 # pygame setup
 pygame.init()
@@ -67,6 +68,7 @@ def walls(grid, x, y, crack_grid, level):
             diff = (level + 1) - min_level
             pow = diff * diff
             if crack_grid[x][y] + pow >= 100:
+                grid[x][y].mine()
                 crack_grid[x][y] = 0
                 grid[x][y] = Air
                 l(s.INFO, f"Wall at ({x}, {y}) broken")
@@ -82,18 +84,59 @@ def gravity(grid, x, y): # TODO: IMPLEMENT THIS IN PLAYER MOVEMENT
         return gravity(grid, x, y + 1)
     return x, y
 
+# ITEMS
+# s.item(Name, Description, Obtainable, sell price, buy price, sellable,
+#  craftable, recipe_loc, stack, amount, a, b, c, d)
+global dirt, water, paste, stone_dust, stone_chunk, stone_cube, coal, coal_furnace, copper_dust, copper_chunk, copper_bar
+
+dirt = s.item("Dirt", "Dirt", True, 0, 0, False, False, None, 10000, 0)
+water = s.item("Water", "A Liquid That could be drunken", True, 1, 5, True, False, None, 10000, 100)
+paste = s.item("Paste", "A Wet Paste Used To Glue Ingredients", True, 0, 1, False, 
+               True, r.r4, 10000, 0, dirt, water)
+stone_dust = s.item("Stone Dust", "A Small Amount of Stone Tastes Like Stone", True, 1, 3, True, 
+                    False, None, 10000, 0)
+stone_chunk = s.item("Stone Chunk", "A Piece Of bigger Stone", True, 5, 7, True, 
+                     True, r.r1, 10000, 0, stone_dust, paste)
+stone_cube = s.item("Stone Cube", "A Solid Cube of Stone", True, 25, 30, True, 
+                    True, r.r2, 10000, 0, stone_chunk, paste)
+coal = s.item("Coal", "Used in a furnacce", True, 5, 10, True, 
+              False, None, 10000, 0)
+coal_furnace = s.item("Coal Furnace", "A Basic Machine That Uses Coal", True, 250, 550, True, 
+                      True, r.r6, 100, 0, stone_cube, coal, paste, water)
+copper_dust = s.item("Copper Dust", "A Small Amount of Copper", True, 5, 12, True, 
+                     False, None, 10000, 0)
+copper_chunk = s.item("Copper Chunk", "A bigger Piece of Copper", True, 40, 50, True, 
+                      True, r.r3, 10000, 0, copper_dust, water)
+copper_bar = s.item("Copper Bar", "A Starters best freind", True, 150, 230, True, 
+                    True, r.r5, 10000, 0, copper_chunk, paste, coal_furnace, coal)
+pure_copper_dust = None
+pure_copper_chunk = None
+pure_copper_bar = None
+
+print(f"setting")
+set([dirt, water, 
+    paste, stone_dust, 
+    stone_chunk, stone_cube, 
+    copper_dust, copper_chunk,
+    coal, coal_furnace, 
+    copper_bar, ])
+
+
 # MATERIALS
 Air = s.Object(s.TEST_SPRITE_PATH)
-Dirt = s.Object(path("Dirt.png"), True, 1, False, True, TABLE=path("Dirt.json", table=True))
-Stone = s.Object(path("Stone.png"), True, 2, False, True, TABLE=path("Stone.json", table=True))
-Hard_stone = s.Object(path("Hard_stone.png"), True, 3, False, True, TABLE=path("Hard_stone.json", table=True))
+Dirt = s.Object(path("Dirt.png"), True, 1, False, True, path("Dirt.json", table=True), True, dirt, 4)
+Stone = s.Object(path("Stone.png"), True, 2, False, True, path("Stone.json", table=True), True, stone_dust, 4)
+Copper_ore = s.Object(path("Copper_ore.png"), True, 2, False, True, path("Copper_ore.json", table=True), True, copper_dust, 3)
+Iron_ore = s.Object(path("Iron_ore.png"), True, 2, False, True, path("Iron_ore.json", table=True), False)
+"""
+Lithium_ore = s.Object(path("Lithium_ore.png"), True, 4, False, True, TABLE=path("Lithium_ore.json", table=True))
+Cobolt_ore = s.Object(path("Cobolt_ore.png"), True, 5, False, True, TABLE=path("Cobolt_ore.json", table=True))
+Aluminium_ore = s.Object(path("Aluminium_ore.png"), True, 3, False, True, TABLE=path("Aluminium_ore.json", table=True))
+Nickel_ore = s.Object(path("Nickel_ore.png"), True, 3, False, True, TABLE=path("Nickel_ore.json", table=True))
+"""
+Hard_stone = s.Object(path("Hard_stone.png"), True, 3, False, True, path("Hard_stone.json", table=True), True, stone_chunk, 1)
 l(s.INFO, "Materials initialized")
 
-# ITEMS
-
-stone_dust = s.item("Stone Dust", "A Small Amount of Stone Tastes Like Stone", True, 1, 3, True, False, None, 10000, 0)
-stone_chunk = s.item("Stone Chunk", "A Piece Of bigger Stone", True, 5, 7, True, True, r.r1, 10000, 0, stone_dust)
-stone_cube = s.item("Stone Cube", "A Solid Cube of Stone", True, 25, 30, True, True, r.r2, 10000, 0, stone_chunk)
 
 GAME_GRID = [[Air for _ in range(s.GRID_HEIGHT)] for _ in range(s.GRID_WIDTH)]
 l(s.INFO, "Game grid initialized")
@@ -157,8 +200,8 @@ class Player:
         l(s.INFO, f"Player mining level set to {num}")
 
 g = ge()
-g.start(air=Air)
-g.mass([ Dirt, Hard_stone, Stone])
+g.start(air=Dirt)
+g.mass([ Dirt, Hard_stone, Stone, Copper_ore, Iron_ore])
 GAME_GRID, CRACK_GRID = g.get()
 l(s.INFO, "Game grid generated")
 
@@ -187,7 +230,7 @@ if __name__ == "__main__":
                 state = "game"
                 l(s.INFO, "Player resumed the game from menu")
             elif option == "Inventory":
-                gui.inventory(screen, btn, txt, [stone_dust, stone_chunk, stone_cube])
+                gui.inventory(screen, btn, txt)
                 
 
         pygame.display.flip()

@@ -2,6 +2,8 @@ import os
 import time
 import logging
 import pygame
+import random
+from inventory import get, set
 
 # LOGGING CONFIG
 
@@ -101,6 +103,9 @@ class Object:
                  LIGHT_SOURCE = False,
                  MINEABLE = False,
                  TABLE = SCRIPT_DIR +  "/tables/test.json",
+                 DROPS_ITEM = False,
+                 ITEM = None,
+                 BAND = 0
                  ):
         self.SPRITE_PATH = SPRITE_PATH
         self.SPRITE = pygame.image.load(self.SPRITE_PATH).convert_alpha()
@@ -109,6 +114,9 @@ class Object:
         self.LIGHT_SOURCE = LIGHT_SOURCE
         self.MINEABLE = MINEABLE
         self.TABLE = TABLE
+        self.DROPS_ITEM = DROPS_ITEM
+        self.ITEM = ITEM
+        self.BAND = BAND
         log(DEBUG, f"Object Loaded with Sprite path {self.SPRITE_PATH}, And Table Path {self.TABLE}")
 
     def sprite(self):
@@ -119,6 +127,10 @@ class Object:
     
     def unload(self):
         self.SPRITE = None
+
+    def mine(self):
+        if self.DROPS_ITEM:
+            self.ITEM.amount += self.BAND
 
     def reload(self):
         self.SPRITE = pygame.image.load(self.SPRITE_PATH).convert_alpha()
@@ -172,6 +184,29 @@ class item:
         return self.amount
 
     def can_craft(self):
-        did, self.a1, self.a2, self.a3, self.a4 = self.recipe_loc(self.a1, self.a2, self.a3, self.a4)
+        did, a1, a2, a3, a4 = self.recipe_loc(self.a1, self.a2, self.a3, self.a4)
+        self.a1 = a1
+        self.a2 = a2
+        self.a3 = a3
+        self.a4 = a4
+
+        inv = get()
+
+        if did:
+            self.amount += 1
+        
+        for item in inv:
+            if a1 is not None and item.name == a1.name:
+                item = a1
+            elif a2 is not None and item.name == a2.name:
+                item = a2
+            elif a3 is not None and item.name == a3.name:
+                item = a3
+            elif a4 is not None and item.name == a4.name:
+                item = a4
+
+
+        set(inv)
+
         return did
 

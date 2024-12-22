@@ -1,5 +1,23 @@
-Development Build 2
+Development Build 3
 
-The Inventory Gui has been implemented
+Crafting sort of works it is a bit buggy
 
-I now plan To Add in crafting and then work towards the first release
+TODO LIST:
+Save Gui
+gravity implementaion
+lighting
+macking cracks visible
+shop
+ladders
+enemies
+console (Low priority)
+consumables
+server
+client
+weapons 
+hotbar
+manufacturing
+workers
+worker gui
+
+more items and materials

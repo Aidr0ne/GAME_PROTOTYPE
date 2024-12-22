@@ -1,6 +1,6 @@
 import pygame
-from settings import log as l
 import settings as s
+from inventory import get, set
 
 c1 = s.COLOUR_1
 c2 = s.COLOUR_2
@@ -69,7 +69,10 @@ class text:
         if text == "Empty":
             self.surface = s.FONT.render(text, True, c1)
         else:
-            self.surface = s.FONT.render(text.name, True, c1)
+            try:
+                self.surface = s.FONT.render(text.name, True, c1)
+            except:
+                self.surface = s.FONT.render(text, True, c1)
 
     def render(self, screen):
         pygame.draw.rect(screen, self.colour, self.rect)
@@ -132,41 +135,59 @@ class gui:
     def settings(self, input_box):
         pass
 
-    def inventory(self, screen, button, text, item_list):
+    def inventory(self, screen, button, text):
         waiting = True
+
         point = 0
         active = []
         buttons = [
-            button("Up", 600, 540, 150, 50, c2, c3),
-            button("Down", 600, 600, 150, 50, c2, c3),
-            button("Exit", 600, 50, 150, 50, c2, c3)
+            button("Up", 700, 540, 150, 50, c2, c3),
+            button("Down", 700, 600, 150, 50, c2, c3),
+            button("Exit", 700, 50, 150, 50, c2, c3)
         ]
 
         while waiting:
+            item_list = get()
             screen.fill((0, 0, 0))
             active = []
             for i in range(s.INVENTORY_RANGE):  # Loads 10 items into active
                 try:
                     active.append(item_list[point + i])
-                except IndexError:
+                except Exception as e:
                     active.append("Empty")
 
             texts = [
-                text(active[0], 100, 50, 200, 50),
-                text(active[1], 100, 110, 200, 50),
-                text(active[2], 100, 170, 200, 50),
-                text(active[3], 100, 230, 200, 50),
-                text(active[4], 100, 290, 200, 50),
-                text(active[5], 100, 350, 200, 50),
-                text(active[6], 100, 410, 200, 50),
-                text(active[7], 100, 470, 200, 50),
-                text(active[8], 100, 530, 200, 50),
-                text(active[9], 100, 590, 200, 50),
+                (text(active[0], 100, 50, 300, 50), text(str(active[0].amount) if active[0] != "Empty" else "0", 410, 50, 100, 50)),
+                (text(active[1], 100, 110, 300, 50), text(str(active[1].amount) if active[1] != "Empty" else "0", 410, 110, 100, 50)),
+                (text(active[2], 100, 170, 300, 50), text(str(active[2].amount) if active[2] != "Empty" else "0", 410, 170, 100, 50)),
+                (text(active[3], 100, 230, 300, 50), text(str(active[3].amount) if active[3] != "Empty" else "0", 410, 230, 100, 50)),
+                (text(active[4], 100, 290, 300, 50), text(str(active[4].amount) if active[4] != "Empty" else "0", 410, 290, 100, 50)),
+                (text(active[5], 100, 350, 300, 50), text(str(active[5].amount) if active[5] != "Empty" else "0", 410, 350, 100, 50)),
+                (text(active[6], 100, 410, 300, 50), text(str(active[6].amount) if active[6] != "Empty" else "0", 410, 410, 100, 50)),
+                (text(active[7], 100, 470, 300, 50), text(str(active[7].amount) if active[7] != "Empty" else "0", 410, 470, 100, 50)),
+                (text(active[8], 100, 530, 300, 50), text(str(active[8].amount) if active[8] != "Empty" else "0", 410, 530, 100, 50)),
+                (text(active[9], 100, 590, 300, 50), text(str(active[9].amount) if active[9] != "Empty" else "0", 410, 590, 100, 50)),
             ]
 
-            for txt in texts:
-                txt.render(screen)
+            craft_buttons = [
+                button("Craft", 520, 50, 150, 50, c2, c3),
+                button("Craft", 520, 110, 150, 50, c2, c3),
+                button("Craft", 520, 170, 150, 50, c2, c3),
+                button("Craft", 520, 230, 150, 50, c2, c3),
+                button("Craft", 520, 290, 150, 50, c2, c3),
+                button("Craft", 520, 350, 150, 50, c2, c3),
+                button("Craft", 520, 410, 150, 50, c2, c3),
+                button("Craft", 520, 470, 150, 50, c2, c3),
+                button("Craft", 520, 530, 150, 50, c2, c3),
+                button("Craft", 520, 590, 150, 50, c2, c3),
+            ]
+            for item_text, amount_text in texts:
+                item_text.render(screen)
+                amount_text.render(screen)
 
+            for i, btn in enumerate(craft_buttons):
+                if active[i] != "Empty" and active[i].craftable:
+                    btn.render(screen)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     waiting = False
@@ -182,6 +203,13 @@ class gui:
                                 point += 1
                         elif btn.text == "Exit":
                             waiting = False
+                for i, btn in enumerate(craft_buttons):
+                    if btn.clicked(event):
+                        if active[i] != "Empty" and active[i].craftable:
+                            if active[i].can_craft():
+                                btn.text = "Crafted"
+                            else:
+                                btn.text = "Not Crafted"
 
             for btn in buttons:
                 btn.render(screen)

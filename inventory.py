@@ -1,10 +1,11 @@
 import settings as s
-from gui import gui
 
-class inventory:
-    def __init__(self, items):
-        self.items = items
+_inventory = []
 
-        #TODO Finish The Inventory Gui then work on this
+def set(items):
+    global _inventory
+    _inventory = items
+    return _inventory
 
-        #TODO Also Make Crafting Gui
+def get():
+    return _inventory

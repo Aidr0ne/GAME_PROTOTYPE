@@ -26,7 +26,7 @@ class Generate:
     def single(self, ore):
         table = self.load_table(ore)
         if not table:
-            print(f"Table {ore.__name__} could not be loaded")
+            print(f"Table {ore.name} could not be loaded")
             return  # Skip if the table could not be loaded
 
         for y in range(s.MINE_DEPTH):
@@ -35,7 +35,7 @@ class Generate:
                     if zone["min"] <= y <= zone["max"]:
                         for x in range(s.MINE_WIDTH):
                             r = random.randint(0, 100)
-                            if r <= zone["chance"]:
+                            if r < zone["chance"]:
                                 self.grid[x][y] = ore
 
     def get(self):
