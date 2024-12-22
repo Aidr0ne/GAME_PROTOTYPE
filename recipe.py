@@ -1,3 +1,6 @@
+from curses import meta
+
+
 def r0(stone, B, C, D):
     # Test recipe
     # 9x stone for a "big stone"
@@ -38,7 +41,6 @@ def r3(dust, water, b, c):
 def r4(dirt, water, a, b):
     # Paste
     # 3x Dirt and 1x water for a paste
-    print(dirt.amount, water.amount, a, b)
     if dirt.amount >= 3 and water.amount >= 1:
         water.amount -= 1
         dirt.amount -= 3
@@ -73,3 +75,29 @@ def r6(stone_cube, coal, paste, water):
         paste.amount -= 8
         return True, stone_cube, coal, paste, water
     return False, stone_cube, coal, paste, water
+
+def r7(iron_dust, metal_paste, a, b):
+    # Ion Chunk
+    # 10x Iron dust needed
+    # 2x metal_paste also needed to glue it togethet
+    if iron_dust.amount >= 10 and metal_paste.amount >= 2:
+        iron_dust.amount -= 10
+        metal_paste.amount -= 2
+        return True, iron_dust, metal_paste, a, b
+    return False, iron_dust, metal_paste, a, b
+
+def r8(paste, copper_dust, water, a):
+    # Metal Paste
+    # 3x paste
+    # 1x copper_dust
+    # 1x water
+    if paste.amount >= 3 and copper_dust.amount >= 1 and water.amount >= 1:
+        paste.amount -= 3
+        copper_dust.amount -= 1
+        water.amount -= 1
+        return True, paste, copper_dust, water, a
+    return False, paste, copper_dust, water, a
+    # Metal Paste
+    # 3x paste
+    # 1x copper_dust
+    # 1x water

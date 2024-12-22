@@ -207,7 +207,7 @@ class gui:
                     if btn.clicked(event):
                         if active[i] != "Empty" and active[i].craftable:
                             if active[i].can_craft():
-                                btn.text = "Crafted"
+                                btn.text = "Crafted" # TODO: The Button does not change colour
                             else:
                                 btn.text = "Not Crafted"
 

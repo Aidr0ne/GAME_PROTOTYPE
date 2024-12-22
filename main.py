@@ -1,3 +1,4 @@
+from ast import Nonlocal
 import pygame
 import settings as s
 import os
@@ -112,14 +113,20 @@ copper_bar = s.item("Copper Bar", "A Starters best freind", True, 150, 230, True
 pure_copper_dust = None
 pure_copper_chunk = None
 pure_copper_bar = None
+metal_paste = s.item("Metal Paste", "A Better paste with copper mixed in", True, 5, 25, True, True, r.r8, 10000, 0, paste, copper_dust, water)
+iron_dust = s.item("Iron Dust", "A small amount of iron", True, 7, 20, True, False, None, 10000, 0)
+iron_chunk = s.item("Iron Chunk", "A chunk of iron", True, 40, 45, True, True, r.r7, 10000, 0, iron_dust, metal_paste)
+iron_bar = None
+iron_unit = None
 
-print(f"setting")
 set([dirt, water, 
     paste, stone_dust, 
     stone_chunk, stone_cube, 
     copper_dust, copper_chunk,
     coal, coal_furnace, 
-    copper_bar, ])
+    copper_bar, iron_dust,
+    metal_paste, iron_chunk,
+    ])
 
 
 # MATERIALS
@@ -127,7 +134,7 @@ Air = s.Object(s.TEST_SPRITE_PATH)
 Dirt = s.Object(path("Dirt.png"), True, 1, False, True, path("Dirt.json", table=True), True, dirt, 4)
 Stone = s.Object(path("Stone.png"), True, 2, False, True, path("Stone.json", table=True), True, stone_dust, 4)
 Copper_ore = s.Object(path("Copper_ore.png"), True, 2, False, True, path("Copper_ore.json", table=True), True, copper_dust, 3)
-Iron_ore = s.Object(path("Iron_ore.png"), True, 2, False, True, path("Iron_ore.json", table=True), False)
+Iron_ore = s.Object(path("Iron_ore.png"), True, 2, False, True, path("Iron_ore.json", table=True), True, iron_dust, 4)
 """
 Lithium_ore = s.Object(path("Lithium_ore.png"), True, 4, False, True, TABLE=path("Lithium_ore.json", table=True))
 Cobolt_ore = s.Object(path("Cobolt_ore.png"), True, 5, False, True, TABLE=path("Cobolt_ore.json", table=True))
@@ -209,6 +216,8 @@ player = Player(START_X, START_Y)
 GAME_GRID[START_X][START_Y] = Air
 state = "game"
 gui = gui.gui()
+money = 0
+
 l(s.INFO, "Game initialized")
 
 if __name__ == "__main__":
